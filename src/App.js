@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Loading from "./Component/Loading";
 
 function App() {
+  const [serverState, setFetchstate] = useState([{}]);
+  const [loader, setloader] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setloader(false);
+    }, 3000);
+    axios
+      .get("https://jsonplaceholder.typicode.com/posts")
+      .then((response) => {
+        setFetchstate(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {loader ? (
+        <div className="App">
+          <Loading />{" "}
+        </div>
+      ) : (
+        <ul>
+          <h2>Length of server fetching data {serverState.length}</h2>
+          {serverState.map((data, index) => {
+            return <li key={data.id}>{data.title}</li>;
+          })}
+        </ul>
+      )}
     </div>
   );
 }
